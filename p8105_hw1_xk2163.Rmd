@@ -1,0 +1,101 @@
+---
+title: "p8105_hw1_xk2163"
+author: "Kang"
+date: "2024-09-22"
+output: github_document
+---
+
+Before doing the HW, I input some need packages.
+
+```{r initial,message=FALSE}
+library(tidyverse)
+library(ggplot2)
+data("penguins", package = "palmerpenguins")
+```
+
+# Problem 1
+
+## Get Data Summary
+
+First of all, we need to get the summary information of the whole data.
+
+```{r skim}
+skimr::skim(penguins) #get the summary information
+```
+
+There are 8 columns, including 3 factor variables and 5 numeric variables.
+The factors variables are species, island and sex. The numeric variables are 
+bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g and year hist.
+
+## Col & Row
+
+We are going to describe the data. The given dataset has `r nrow(penguins)` rows and `r ncol(penguins)` cols.
+
+```{r}
+nrow(penguins)
+ncol(penguins)
+```
+
+## Taking the average
+
+After that, we are going to take the mean of variable `flipper_length_mm`. And the code are shown below. The average of `flipper_length_mm` is `r mean(penguins$flipper_length_mm, na.rm = TRUE)`.
+
+```{r}
+mean(penguins$flipper_length_mm, na.rm = TRUE) # take the average ignoring the NAs.
+```
+
+## Generating the scatter plot
+
+Then, we are going to make a scatter plot. 
+
+```{r}
+ggplot(data = penguins,
+       aes(x = bill_length_mm,
+           y = flipper_length_mm, color = species))+
+  geom_point()
+ggsave("plot1.jpg")
+```
+
+# Problem 2
+
+## Generate the data frame
+
+First, I generated 4 different variables and grouped them into a data frame.
+
+```{r generating a data frame}
+set.seed(1)
+
+data_df = 
+  data_frame(
+  random_samp = rnorm(10),
+  logical_vec = random_samp > 0,
+  character_vec = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Holiday", "Weekend", "Workday"),
+  factor_vec = factor(c("low", "medium", "high", "low", "medium", 
+                          "high", "low", "medium", "high", "medium"),
+                      levels = c("low","medium","high"))
+  )
+
+print(data_df)
+```
+
+## Taking the average of all varibales in the dataframe
+
+```{r take the average}
+mean(pull(data_df,random_samp))
+mean(pull(data_df,logical_vec))
+mean(pull(data_df,character_vec))
+mean(pull(data_df,factor_vec))
+```
+
+Numeric and logical values can be averaged because they have inherent numeric representations. Character and factor data represent categories without numeric meaning, so calculating a mean isn't possible.
+
+## Convert all variables into numeric
+
+```{r}
+as.numeric(pull(data_df,random_samp))
+as.numeric(pull(data_df,logical_vec))
+as.numeric(pull(data_df,character_vec))
+as.numeric(pull(data_df,factor_vec))
+```
+
+From the above result, we can also find out the reason. However, if we force a numeric forced conversion, factor can still be converted to a numeric variable. We can convert a factor into numeric because, internally, factors are stored as integer codes representing their levels. When converting, R uses these underlying integer codes, but they only indicate category positions, not actual numeric values.
